@@ -4,14 +4,14 @@
 #include <string.h>
 
 typedef struct T_Memoria{
-    int bitR, bitM;
+    int bitR;
     int contaAcesso;
     char endereco[8];
 }Memoria;
 
 typedef struct T_IO{
     /* Variáveis de controle */
-    int operacoes, leituras, escritas, indice;
+    int operacoes, leituras, escritas;
     int hits, misses, writebacks, usedPages;
     float faults;
 

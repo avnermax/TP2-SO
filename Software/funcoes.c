@@ -13,6 +13,7 @@ void LRU(IO *io, Memoria *mem, char *endereco){
     }
 
     strcpy(mem[menor].endereco, endereco);
+    mem[menor].contaAcesso++; // Conta acesso do endereço recém copiado.
 }
 
 void NRU(IO *io, Memoria *mem, char *endereco){
@@ -25,28 +26,28 @@ void Segunda_chance(IO *io, Memoria *mem, char *endereco){
 
 /* FUNÇÕES */
 void adicionaEndereco(IO *io, Memoria *mem, char *endereco){
-	if(io->usedPages == 0 && io->indice == 0){
-        strcpy(mem[io->indice].endereco, endereco);
+	if(io->usedPages == 0){
+        strcpy(mem[io->usedPages].endereco, endereco);
+        io->usedPages++;
 	}else{
-        io->indice++;
-        if(io->indice < io->tamMemoria){
-            strcpy(mem[io->indice].endereco, endereco);
+        if(io->usedPages < io->numPaginas){
+            strcpy(mem[io->usedPages].endereco, endereco);
+            mem[io->usedPages].contaAcesso++; // Conta acesso do endereço recém copiado.
+            io->usedPages++;
         }else{
-            io->indice = io->tamMemoria; // Para não estourar o valor do indice.
             substituiEndereco(io, mem, endereco);
         }
 	}
-
-	if(io->usedPages < io->numPaginas)
-		io->usedPages++;
 
 	io->escritas++;
 }
 
 bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
     int i;
+
     for(i = 0; i < io->tamMemoria; i++){
 		if(strcmp(mem[i].endereco, endereco) == 0){
+            mem[i].contaAcesso++; // Conta o acesso do endereço encontrado.
 			return true;
 		}
 	}

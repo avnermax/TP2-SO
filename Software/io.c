@@ -9,7 +9,6 @@ IO * ioexec(char *argv[]){
     io->operacoes = 0;
     io->leituras = 0;
     io->escritas = 0;
-    io->indice = 0;
     io->hits = 0;
     io->misses = 0;
     io->writebacks = 0;
@@ -34,7 +33,7 @@ IO * ioexec(char *argv[]){
     if(io->tamMemoria < 128 || io->tamMemoria > 16384)
         printf("Tamanho de memória inválido.\n");
 
-    io->numPaginas = io->tamPagina / io->tamMemoria;
+    io->numPaginas = io->tamMemoria / io->tamPagina;
 
     return io;
 }
