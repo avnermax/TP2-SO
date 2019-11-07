@@ -40,5 +40,13 @@ int main(int argc, char *argv[]){
         io->operacoes++;
     }
 
+    printf("Executando o simulador...\n");
+    printf("Arquivo de entrada: %s\n", io->arq);
+    printf("Tamanho da memória: %d\n", io->tamMemoria);
+    printf("Tamanho das páginas: %d\n", io->tamPagina);
+    printf("Técnica de reposição: %s\n", io->politicaSubs);
+    printf("Páginas lidas: %d\n", io->leituras);
+    printf("Páginas escritas: %d\n", io->escritas);
+
     return 0;
 }

@@ -2,7 +2,17 @@
 
 /* POLITICAS DE SUBSTITUIÇÃO */
 void LRU(IO *io, Memoria *mem, char *endereco){
-    
+    int i, menor;
+
+    // Encontra o indice do endereço com menor número de acesso.
+    menor = mem[0].contaAcesso;
+    for(i = 1; i < io->tamMemoria; i++){
+        if(mem[i].contaAcesso < menor){
+            menor = mem[i].contaAcesso;
+        }
+    }
+
+    strcpy(mem[menor].endereco, endereco);
 }
 
 void NRU(IO *io, Memoria *mem, char *endereco){

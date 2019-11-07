@@ -4,6 +4,8 @@
 #include <string.h>
 
 typedef struct T_Memoria{
+    int bitR, bitM;
+    int contaAcesso;
     char endereco[8];
 }Memoria;
 
