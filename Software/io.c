@@ -21,7 +21,7 @@ IO * ioexec(char *argv[]){
     if(strcmp(io->politicaSubs, "lru") > 0 || strcmp(io->politicaSubs, "nru") > 0 || strcmp(io->politicaSubs, "segunda_chance") > 0)
         printf("Política de substituição inválida.\n");
 
-    // Grava o arquivo que será testado.
+    // Grava o arquivo que contém o conjunto de endereços.
     strcpy(io->arq, argv[2]);
 
     // Grava o tamanho da página passado como argumento.

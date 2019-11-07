@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
         return 0;
     }
 
-    // Aloca vetor que conterá os endereços do arquivo.
+    // Aloca vetor referente a memória simulada.
     memVirtual = (Memoria*) calloc((io->tamMemoria), sizeof(Memoria));
 
     // Grava dados do arquivo no vetor.
