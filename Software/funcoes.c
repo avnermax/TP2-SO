@@ -17,23 +17,36 @@ void LRU(IO *io, Memoria *mem, char *endereco){
 }
 
 void NRU(IO *io, Memoria *mem, char *endereco){
-
+    
 }
 
 void Segunda_chance(IO *io, Memoria *mem, char *endereco){
+    int i, c = 0;
+    float menor;
 
+    // Encontra o indice do endereço com o acesso mais antigo.
+    menor = mem[0].clckacesso;
+    for(i = 1; i < io->tamMemoria; i++){
+        if(mem[i].clckacesso < menor){
+            menor = mem[i].clckacesso;
+	    c = i;
+        }
+    }
+    strcpy(mem[c].endereco, endereco);
+    //mem[c].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;	
+    mem[menor].contaAcesso++; // Conta acesso do endereço recém copiado.
 }
 
 /* FUNÇÕES */
 void adicionaEndereco(IO *io, Memoria *mem, char *endereco){
 	if(io->usedPages == 0){
         strcpy(mem[io->usedPages].endereco, endereco);
-	//io->clckacesso = clock() - tempo) / (float)CLOCKS_PER_SEC
+	//mem[io->usedPages].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;
         io->usedPages++;
 	}else{
         if(io->usedPages < io->numPaginas){
             strcpy(mem[io->usedPages].endereco, endereco);
-	    //io->clckacesso = clock() - tempo) / (float)CLOCKS_PER_SEC
+	    //mem[io->usedPages].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;
             mem[io->usedPages].contaAcesso++; // Conta acesso do endereço recém copiado.
             io->usedPages++;
         }else{
