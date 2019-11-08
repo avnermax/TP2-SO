@@ -19,7 +19,9 @@ int main(int argc, char *argv[]){
     memVirtual = (Memoria*) calloc((io->numPaginas), sizeof(Memoria));
 
     printf("Executando o simulador...\n");
-
+    clock_t tempo;
+    //recebe como parametro as horas do sistema.
+	tempo = clock();
     // Simula fluxo de dados do arquivo para a memória.
     while(!feof(arq)){
         fscanf(arq, "%s %c\n", e, &t);
