@@ -28,10 +28,12 @@ void Segunda_chance(IO *io, Memoria *mem, char *endereco){
 void adicionaEndereco(IO *io, Memoria *mem, char *endereco){
 	if(io->usedPages == 0){
         strcpy(mem[io->usedPages].endereco, endereco);
+	//io->clckacesso = clock() - tempo) / (float)CLOCKS_PER_SEC
         io->usedPages++;
 	}else{
         if(io->usedPages < io->numPaginas){
             strcpy(mem[io->usedPages].endereco, endereco);
+	    //io->clckacesso = clock() - tempo) / (float)CLOCKS_PER_SEC
             mem[io->usedPages].contaAcesso++; // Conta acesso do endereço recém copiado.
             io->usedPages++;
         }else{
