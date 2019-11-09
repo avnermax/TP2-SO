@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 
         // Reseta o bitR dos enderecos.
         tAtual = clock();
-        if((double)(tAtual - tempo) / CLOCKS_PER_SEC >= 0.1){ // Reseta o bitR a cada 100ms.
+        if((double)(tAtual - tempo) / CLOCKS_PER_SEC >= 0.1){ // A cada 100ms.
             resetaBitR(memVirtual, io);
             tempo = clock();
         }
@@ -63,6 +63,7 @@ int main(int argc, char *argv[]){
     printf("Paginas lidas: %d\n", io->leituras);
     printf("Paginas escritas: %d\n", io->escritas);
     printf("Numero de Writebacks: %d\n", io->writebacks);
+    printf("Numero de operacoes executadas: %d\n", io->operacoes);
 
     return 0;
 }

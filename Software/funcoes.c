@@ -29,21 +29,21 @@ void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
     menorClock = mem[0].clockacesso;
     for(i = 1; i < io->numPaginas; i++){
         if(mem[i].clockacesso < menorClock){
-			menorClock = mem[i].clockacesso;
-	    		c = i; // Recebe o indice do menor clock encontrado.
-	}    
+            menorClock = mem[i].clockacesso;
+            c = i; // Recebe o indice do menor clock encontrado.
+        }
     }
-    if(mem[c].bitR == 0){ 
-	// Substitue mem [c]
-    	strcpy(mem[c].endereco, endereco);
-    	mem[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-	mem[c].bitR = 1;
-	mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
+    if(mem[c].bitR == 0){
+        // Substitue mem[c]
+        strcpy(mem[c].endereco, endereco);
+        mem[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+        mem[c].bitR = 1;
+        mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
     }else{
-	// Nova chance a mem [c]
-	mem[c].bitR = 0;
-	mem[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;    
-    	Segunda_chance(io, mem, endereco, t);
+        // Nova chance a mem[c]
+        mem[c].bitR = 0;
+        mem[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+        Segunda_chance(io, mem, endereco, t);
     }
 }
 
