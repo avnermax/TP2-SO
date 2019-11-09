@@ -1,8 +1,7 @@
 #include "funcoes.h"
 
 int main(int argc, char *argv[]){
-    char t;
-	unsigned e;
+    char e[8], t;
     Memoria *memVirtual;
     IO *io;
     FILE *arq;
@@ -27,7 +26,7 @@ int main(int argc, char *argv[]){
 
     // Simula fluxo de dados do arquivo para a memoria.
     while(!feof(arq)){
-        fscanf(arq, "%x %c\n", &e, &t);
+        fscanf(arq, "%s %c\n", e, &t);
         if(t == 'W' || t == 'w'){ // Escreve endereço na memoria.
             escreveEndereco(io, memVirtual, e, tempo);
         }else if(t == 'R' || t == 'r'){ // Le endereço da memoria.

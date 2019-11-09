@@ -1,7 +1,7 @@
 #include "funcoes.h"
 
 /* POLITICAS DE SUBSTITUICAO */
-void LRU(IO *io, Memoria *mem, unsigned *endereco){
+void LRU(IO *io, Memoria *mem, char *endereco){
     int i, menor, c = 0;
 
     // Encontra o indice do endereco com menor numero de acesso.
@@ -17,11 +17,11 @@ void LRU(IO *io, Memoria *mem, unsigned *endereco){
     mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
 }
 
-void NRU(IO *io, Memoria *mem, unsigned *endereco){
+void NRU(IO *io, Memoria *mem, char *endereco){
 
 }
 
-void Segunda_chance(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
+void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
     int i, c = 0;
     float menorClock;
 
@@ -56,7 +56,7 @@ void resetaBitR(Memoria *mem, IO *io){
     }
 }
 
-void adicionaEndereco(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
+void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 
     strcpy(mem[io->usedPages].endereco, endereco);
 	mem[io->usedPages].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
@@ -67,7 +67,7 @@ void adicionaEndereco(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
 	io->escritas++;
 }
 
-bool encontraEndereco(IO *io, Memoria *mem, unsigned *endereco){
+bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
     int i;
 
     for(i = 0; i < io->numPaginas; i++){
@@ -81,7 +81,7 @@ bool encontraEndereco(IO *io, Memoria *mem, unsigned *endereco){
 	return false;
 }
 
-void substituiEndereco(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
+void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 	if(strcmp(io->politicaSubs, "lru") == 0){
 		LRU(io, mem, endereco);
 	}else if(strcmp(io->politicaSubs, "nru") == 0){
@@ -93,7 +93,7 @@ void substituiEndereco(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
 	io->writebacks++;
 }
 
-void escreveEndereco(IO *io, Memoria *mem, unsigned *endereco, clock_t t){
+void escreveEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 	if(io->usedPages < io->numPaginas){
 		adicionaEndereco(io, mem, endereco, t);
 	}else{
