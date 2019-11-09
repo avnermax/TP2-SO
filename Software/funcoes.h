@@ -5,10 +5,9 @@
 #include <time.h>
 
 typedef struct T_Memoria{
-    int bitR;
-    int bitM;
-    float clckacesso;
+    int bitR, bitM;
     int contaAcesso;
+    float clockacesso;
     char endereco[8];
 }Memoria;
 
@@ -29,8 +28,8 @@ IO * ioexec(char *argv[]);
 /* funcoes.c */
 void LRU(IO *io, Memoria *mem, char *endereco);
 void NRU(IO *io, Memoria *mem, char *endereco);
-void Segunda_chance(IO *io, Memoria *mem, char *endereco);
-void adicionaEndereco(IO *io, Memoria *mem, char *endereco);
+void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t);
+void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
 bool encontraEndereco(IO *io, Memoria *mem, char *endereco);
-void substituiEndereco(IO *io, Memoria *mem, char *endereco);
-void escreveEndereco(IO *io, Memoria *mem, char *endereco);
+void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
+void escreveEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);

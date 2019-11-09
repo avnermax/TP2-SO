@@ -15,23 +15,23 @@ IO * ioexec(char *argv[]){
     io->usedPages = 0;
     io->faults = 0;
 
-    // Grava a política de substituição passado como argumento.
+    // Grava a política de substituicao passado como argumento.
     strcpy(io->politicaSubs, argv[1]);
     if(strcmp(io->politicaSubs, "lru") > 0 || strcmp(io->politicaSubs, "nru") > 0 || strcmp(io->politicaSubs, "segunda_chance") > 0)
-        printf("Política de substituição inválida.\n");
+        printf("Politica de substituicao invalida.\n");
 
-    // Grava o arquivo que contém o conjunto de endereços.
+    // Grava o arquivo que contem o conjunto de enderecos.
     strcpy(io->arq, argv[2]);
 
     // Grava o tamanho da página passado como argumento.
     io->tamPagina = atoi(argv[3]);
     if(io->tamPagina < 2 || io->tamPagina > 64)
-        printf("Tamanho de página inválido.\n");
+        printf("Tamanho de pagina invalido.\n");
 
-    // Grava o tamanho da memória passado como argumento.
+    // Grava o tamanho da memoria passado como argumento.
     io->tamMemoria = atoi(argv[4]);
     if(io->tamMemoria < 128 || io->tamMemoria > 16384)
-        printf("Tamanho de memória inválido.\n");
+        printf("Tamanho de memoria invalido.\n");
 
     io->numPaginas = io->tamMemoria / io->tamPagina;
 

@@ -1,66 +1,57 @@
 #include "funcoes.h"
 
-/* POLITICAS DE SUBSTITUIÃ‡ÃƒO */
+/* POLITICAS DE SUBSTITUICAO */
 void LRU(IO *io, Memoria *mem, char *endereco){
-    int i, menor;
+    int i, menor, c = 0;
 
-    // Encontra o indice do endereÃ§o com menor nÃºmero de acesso.
+    // Encontra o indice do endereco com menor numero de acesso.
     menor = mem[0].contaAcesso;
-    for(i = 1; i < io->tamMemoria; i++){
+    for(i = 1; i < io->numPaginas; i++){
         if(mem[i].contaAcesso < menor){
             menor = mem[i].contaAcesso;
+            c = i; // Recebe o indice do endereco com menor numero de acesso.
         }
     }
 
-    strcpy(mem[menor].endereco, endereco);
-    mem[menor].contaAcesso++; // Conta acesso do endereÃ§o recÃ©m copiado.
+    strcpy(mem[c].endereco, endereco);
+    mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
 }
 
 void NRU(IO *io, Memoria *mem, char *endereco){
-    
+
 }
 
-void Segunda_chance(IO *io, Memoria *mem, char *endereco){
+void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
     int i, c = 0;
-    float menor;
+    float menorClock;
 
-    // Encontra o indice do endereÃ§o com o acesso mais antigo.
-    menor = mem[0].clckacesso;
-    for(i = 1; i < io->tamMemoria; i++){
-        if(mem[i].clckacesso < menor){
+    // Encontra o indice do endereco com o acesso mais antigo.
+    menorClock = mem[0].clockacesso;
+    for(i = 1; i < io->numPaginas; i++){
+        if(mem[i].clockacesso < menorClock){
 			if(mem[i].bitR == 0){
-				menor = mem[i].clckacesso;
-	    		c = i;
+				menorClock = mem[i].clockacesso;
+	    		c = i; // Recebe o indice do menor clock encontrado.
 			}else{
 				mem[c].bitR = 0;
-			}			
+			}
         }
     }
+
     strcpy(mem[c].endereco, endereco);
-    mem[c].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;
-	mem[c].bitR = 0;	
-    mem[menor].contaAcesso++; // Conta acesso do endereÃ§o recÃ©m copiado.
-    
+    mem[c].clockacesso = (clock() - t) / (float)CLOCKS_PER_SEC;
+	mem[c].bitR = 0;
+    mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
 }
 
-/* FUNÇÕES */
-void adicionaEndereco(IO *io, Memoria *mem, char *endereco){
-	if(io->usedPages == 0){
-        strcpy(mem[io->usedPages].endereco, endereco);
-		mem[io->usedPages].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;
-		mem[io->usedPages].bitR = 1 ;
-        io->usedPages++;
-	}else{
-        if(io->usedPages < io->numPaginas){
-            strcpy(mem[io->usedPages].endereco, endereco);
-	    	mem[io->usedPages].clckacesso = (clock() - tempo) / (float)CLOCKS_PER_SEC;
-	    	mem[io->usedPages].bitR = 1 ;
-            mem[io->usedPages].contaAcesso++; // Conta acesso do endereÃ§o recÃ©m copiado.
-            io->usedPages++;
-        }else{
-            substituiEndereco(io, mem, endereco);
-        }
-	}
+/* FUNCOES */
+void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
+
+    strcpy(mem[io->usedPages].endereco, endereco);
+	mem[io->usedPages].clockacesso = (clock() - t) / (float)CLOCKS_PER_SEC;
+	mem[io->usedPages].bitR = 1;
+    mem[io->usedPages].contaAcesso++; // Conta acesso do endereco recem copiado.
+    io->usedPages++;
 
 	io->escritas++;
 }
@@ -68,10 +59,10 @@ void adicionaEndereco(IO *io, Memoria *mem, char *endereco){
 bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
     int i;
 
-    for(i = 0; i < io->tamMemoria; i++){
+    for(i = 0; i < io->numPaginas; i++){
 		if(strcmp(mem[i].endereco, endereco) == 0){
-			mem[i].bitR =1;
-            mem[i].contaAcesso++; // Conta o acesso do endereÃ§o encontrado.
+			mem[i].bitR = 1;
+            mem[i].contaAcesso++; // Conta o acesso do endereco encontrado.
 			return true;
 		}
 	}
@@ -79,22 +70,23 @@ bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
 	return false;
 }
 
-void substituiEndereco(IO *io, Memoria *mem, char *endereco){
+void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 	if(strcmp(io->politicaSubs, "lru") == 0){
 		LRU(io, mem, endereco);
 	}else if(strcmp(io->politicaSubs, "nru") == 0){
 		NRU(io, mem, endereco);
 	}else if(strcmp(io->politicaSubs, "segunda_chance") == 0){
-		Segunda_chance(io, mem, endereco);
+		Segunda_chance(io, mem, endereco, t);
 	}
+
 	io->writebacks++;
 }
 
-void escreveEndereco(IO *io, Memoria *mem, char *endereco){
+void escreveEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 	if(io->usedPages < io->numPaginas){
-		adicionaEndereco(io, mem, endereco);
+		adicionaEndereco(io, mem, endereco, t);
 	}else{
 		io->faults++;
-		substituiEndereco(io, mem, endereco);
+		substituiEndereco(io, mem, endereco, t);
 	}
 }
