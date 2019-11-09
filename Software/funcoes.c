@@ -33,6 +33,7 @@ void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
             c = i; // Recebe o indice do menor clock encontrado.
         }
     }
+
     if(mem[c].bitR == 0){
         // Substitue mem[c]
         strcpy(mem[c].endereco, endereco);
