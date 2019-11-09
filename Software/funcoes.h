@@ -8,7 +8,7 @@ typedef struct T_Memoria{
     int bitR, bitM;
     int contaAcesso;
     float clockacesso;
-    char endereco[8];
+    unsigned endereco;
 }Memoria;
 
 typedef struct T_IO{
