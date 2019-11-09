@@ -6,6 +6,7 @@
 
 typedef struct T_Memoria{
     int bitR;
+    int bitM;
     float clckacesso;
     int contaAcesso;
     char endereco[8];
