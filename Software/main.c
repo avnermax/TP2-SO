@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
     Memoria *memVirtual;
     IO *io;
     FILE *arq;
-    clock_t tempo;
+    clock_t tempo, tAtual;
 
     io = ioexec(argv);
 
@@ -41,6 +41,13 @@ int main(int argc, char *argv[]){
             printf("Tipo de operação invalida.\n");
             return 0;
         }
+
+        // Reseta o bitR dos enderecos.
+        tAtual = clock();
+        if((double)(tAtual - tempo) / CLOCKS_PER_SEC >= 0.1){ // Reseta o bitR a cada 100ms.
+            resetaBitR(memVirtual, io);
+        }
+
         io->operacoes++;
     }
 

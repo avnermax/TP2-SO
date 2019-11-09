@@ -26,12 +26,12 @@ IO * ioexec(char *argv[]){
     // Grava o tamanho da página passado como argumento.
     io->tamPagina = atoi(argv[3]);
     if(io->tamPagina < 2 || io->tamPagina > 64)
-        printf("Tamanho de pagina invalido.\n");
+        printf("Tamanho de pagina %dKB, invalido.\n", io->tamPagina);
 
     // Grava o tamanho da memoria passado como argumento.
     io->tamMemoria = atoi(argv[4]);
     if(io->tamMemoria < 128 || io->tamMemoria > 16384)
-        printf("Tamanho de memoria invalido.\n");
+        printf("Tamanho de memoria %dKB, invalido.\n", io->tamMemoria);
 
     io->numPaginas = io->tamMemoria / io->tamPagina;
 
