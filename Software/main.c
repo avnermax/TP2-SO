@@ -46,6 +46,7 @@ int main(int argc, char *argv[]){
         tAtual = clock();
         if((double)(tAtual - tempo) / CLOCKS_PER_SEC >= 0.1){ // Reseta o bitR a cada 100ms.
             resetaBitR(memVirtual, io);
+            tempo = clock();
         }
 
         io->operacoes++;
