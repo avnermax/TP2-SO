@@ -56,13 +56,68 @@ void resetaBitR(Memoria *mem, IO *io){
     }
 }
 
-void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
+/* =================================================================== */
+/* PROTOTIPO DE SHIFT - Do jeito que está não vai funcionar,
+por causa de tipos de variáveis diferentes.*/
 
-    strcpy(mem[io->usedPages].endereco, endereco);
-	mem[io->usedPages].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-	mem[io->usedPages].bitR = 1;
-    mem[io->usedPages].contaAcesso++; // Conta acesso do endereco recem copiado.
-    io->usedPages++;
+/* Se utilizarmos unsigned (que o c encherga como binário),
+e usarmos o endereço '0785db58' como exemplo e supondo que
+será feito shift de 's' valendo 2... ao shiftar
+obteremos '000785db'... esse endereço me garante uma posição
+válida na memória (simulada usando ou não a hash)? */
+
+/* Minha dúvida é essa, ao obtermos o endereço shiftado,
+o que ele significa, saca? (Não creio que seja a chave da hash...
+pq ele não pede que seja feito obrigatoriamente com hash. Pq creio que
+o Sachetto não daria aquele trecho de código e não especificaria o uso
+dele, caso fosse necessário.) */
+
+// char * shiftaEndereco(char *endereco, int s){
+//     int i;
+//     char aux[8];
+//
+//     aux = endereco;
+//     while(s > 0){
+//         for(i = (strlen(endereco) - 1); i > 0; i--){
+//             aux[i] = endereco[i - 1];
+//         }
+//         if(i == 0) aux[i] = "0";
+//         s--;
+//     }
+//
+//     return aux;
+// }
+//
+// int calculaIndice(char *endereco, int tamPagina){
+//     int i, s, tmp;
+//     char i[8];
+//
+//     s = 0;
+//     tmp = tamPagina;
+//     while(tmp > 1){
+//         tmp = tmp >> 1;
+//         s++;
+//     }
+//
+//     i = shiftaEndereco(endereco, s);
+//     return i;
+// }
+/* =================================================================== */
+
+void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
+    // int indice;
+
+    if(mem[io->usedPages].bitR == 0 && mem[io->usedPages].bitM == 0){ // Classe 0 NRU.
+        // indice = calculaIndice(endereco, io->tamPagina);
+        // printf("indice:%d\n", indice);
+
+        strcpy(mem[io->usedPages].endereco, endereco);
+    	mem[io->usedPages].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+    	mem[io->usedPages].bitR = 1;
+        mem[io->usedPages].bitM = 1;
+        mem[io->usedPages].contaAcesso++; // Conta acesso do endereco recem copiado.
+        io->usedPages++;
+    }
 
 	io->escritas++;
 }

@@ -30,6 +30,8 @@ void LRU(IO *io, Memoria *mem, char *endereco);
 void NRU(IO *io, Memoria *mem, char *endereco);
 void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t);
 void resetaBitR(Memoria *mem, IO *io);
+// char * shiftaEndereco(char *endereco, int s);
+// int calculaIndice(char *endereco, int tamPagina);
 void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
 bool encontraEndereco(IO *io, Memoria *mem, char *endereco);
 void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);

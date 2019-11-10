@@ -27,9 +27,9 @@ int main(int argc, char *argv[]){
     // Simula fluxo de dados do arquivo para a memoria.
     while(!feof(arq)){
         fscanf(arq, "%s %c\n", e, &t);
-        if(t == 'W' || t == 'w'){ // Escreve endereço na memoria.
+        if(t == 'W'){ // Escreve endereço na memoria.
             escreveEndereco(io, memVirtual, e, tempo);
-        }else if(t == 'R' || t == 'r'){ // Le endereço da memoria.
+        }else if(t == 'R'){ // Le endereço da memoria.
             if(encontraEndereco(io, memVirtual, e)){
                 io->hits++;
             }else{
