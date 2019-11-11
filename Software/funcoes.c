@@ -171,3 +171,10 @@ void escreveEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t){
 		substituiEndereco(io, mem, endereco, t);
 	}
 }
+
+void inicializar(hash* tabela[],IO *io) {  
+	int i;
+	for(i = 0; i< io->numPaginas ; i++){ 
+ 		tabela[i] = NULL; 
+ 	}		  
+ }
