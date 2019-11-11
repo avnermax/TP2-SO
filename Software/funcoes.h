@@ -33,6 +33,6 @@ void Segunda_chance(IO *io, Memoria *mem, unsigned endereco, clock_t t);
 void resetaBitR(Memoria *mem, IO *io);
 unsigned calculaIndice(unsigned endereco, unsigned tamPagina);
 void adicionaEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
-bool encontraEndereco(IO *io, Memoria *mem, unsigned endereco);
+int encontraEndereco(IO *io, Memoria *mem, unsigned endereco);
 void substituiEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
 void escreveEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);

@@ -3,6 +3,7 @@
 int main(int argc, char *argv[]){
     unsigned e;
     char t;
+    int ret;
     Memoria *memVirtual;
     IO *io;
     FILE *arq;
@@ -31,9 +32,10 @@ int main(int argc, char *argv[]){
         if(t == 'W'){ // Escreve endereço na memoria.
             escreveEndereco(io, memVirtual, e, tempo);
         }else if(t == 'R'){ // Le endereço da memoria.
-            if(encontraEndereco(io, memVirtual, e)){
+            ret = encontraEndereco(io, memVirtual, e);
+            if(ret == 0){
                 io->hits++;
-            }else{
+            }else if(ret == 1){
                 io->misses++;
                 escreveEndereco(io, memVirtual, e, tempo);
             }
