@@ -1,7 +1,7 @@
 #include "funcoes.h"
 
 /* POLITICAS DE SUBSTITUICAO */
-void LRU(IO *io, Memoria *mem, char *endereco){
+void LRU(IO *io, Memoria *mem, unsigned endereco){
     int i, menor, c = 0;
 
     // Encontra o indice do endereco com menor numero de acesso.
@@ -13,15 +13,15 @@ void LRU(IO *io, Memoria *mem, char *endereco){
         }
     }
 
-    strcpy(mem[c].endereco, endereco);
+    mem[c].endereco = endereco;
     mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
 }
 
-void NRU(IO *io, Memoria *mem, char *endereco){
+void NRU(IO *io, Memoria *mem, unsigned endereco){
 
 }
 
-void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
+void Segunda_chance(IO *io, Memoria *mem, unsigned endereco, clock_t t){
     int i, c = 0;
     float menorClock;
 
@@ -36,7 +36,7 @@ void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t){
 
     if(mem[c].bitR == 0){
         // Substitue mem[c]
-        strcpy(mem[c].endereco, endereco);
+        mem[c].endereco = endereco;
         mem[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         mem[c].bitR = 1;
         mem[c].contaAcesso++; // Conta acesso do endereco recem copiado.
@@ -56,77 +56,45 @@ void resetaBitR(Memoria *mem, IO *io){
     }
 }
 
-/* =================================================================== */
-/* PROTOTIPO DE SHIFT - Do jeito que está não vai funcionar,
-por causa de tipos de variáveis diferentes.*/
+unsigned calculaIndice(unsigned endereco, unsigned tamPagina){
+    unsigned s, page, tmp;
 
-/* Se utilizarmos unsigned (que o c encherga como binário),
-e usarmos o endereço '0785db58' como exemplo e supondo que
-será feito shift de 's' valendo 2... ao shiftar
-obteremos '000785db'... esse endereço me garante uma posição
-válida na memória (simulada usando ou não a hash)? */
+    s = 0;
+    tmp = tamPagina;
+    while(tmp > 1){
+        tmp = tmp >> 1;
+        s++;
+    }
 
-/* Minha dúvida é essa, ao obtermos o endereço shiftado,
-o que ele significa, saca? (Não creio que seja a chave da hash...
-pq ele não pede que seja feito obrigatoriamente com hash. Pq creio que
-o Sachetto não daria aquele trecho de código e não especificaria o uso
-dele, caso fosse necessário.) */
+    page = endereco >> s;
+    printf("s:%x\n", s);
+    printf("endereco:%d page:%d\n", endereco, page);
+    return page;
+}
 
-// char * shiftaEndereco(char *endereco, int s){
-//     int i;
-//     char aux[8];
-//
-//     aux = endereco;
-//     while(s > 0){
-//         for(i = (strlen(endereco) - 1); i > 0; i--){
-//             aux[i] = endereco[i - 1];
-//         }
-//         if(i == 0) aux[i] = "0";
-//         s--;
-//     }
-//
-//     return aux;
-// }
-//
-// int calculaIndice(char *endereco, int tamPagina){
-//     int i, s, tmp;
-//     char i[8];
-//
-//     s = 0;
-//     tmp = tamPagina;
-//     while(tmp > 1){
-//         tmp = tmp >> 1;
-//         s++;
-//     }
-//
-//     i = shiftaEndereco(endereco, s);
-//     return i;
-// }
-/* =================================================================== */
-
-void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
-    // int indice;
+void adicionaEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t){
+    unsigned indice;
 
     if(mem[io->usedPages].bitR == 0 && mem[io->usedPages].bitM == 0){ // Classe 0 NRU.
-        // indice = calculaIndice(endereco, io->tamPagina);
-        // printf("indice:%d\n", indice);
+        indice = calculaIndice(endereco, io->tamPagina);
+        printf("indice:%x\n", indice);
 
-        strcpy(mem[io->usedPages].endereco, endereco);
-    	mem[io->usedPages].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-    	mem[io->usedPages].bitR = 1;
-        mem[io->usedPages].bitM = 1;
-        mem[io->usedPages].contaAcesso++; // Conta acesso do endereco recem copiado.
+        mem[indice].endereco = endereco;
+    	mem[indice].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+    	mem[indice].bitR = 1;
+        mem[indice].bitM = 1;
+        mem[indice].contaAcesso++; // Conta acesso do endereco recem copiado.
         io->usedPages++;
     }
 
 	io->escritas++;
 }
 
-bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
+bool encontraEndereco(IO *io, Memoria *mem, unsigned endereco){
     int i;
 
     for(i = 0; i < io->numPaginas; i++){
-		if(strcmp(mem[i].endereco, endereco) == 0){
+		if(mem[i].endereco == endereco){
 			mem[i].bitR = 1;
             mem[i].contaAcesso++; // Conta o acesso do endereco encontrado.
 			return true;
@@ -136,7 +104,7 @@ bool encontraEndereco(IO *io, Memoria *mem, char *endereco){
 	return false;
 }
 
-void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
+void substituiEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t){
 	if(strcmp(io->politicaSubs, "lru") == 0){
 		LRU(io, mem, endereco);
 	}else if(strcmp(io->politicaSubs, "nru") == 0){
@@ -148,7 +116,7 @@ void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
 	io->writebacks++;
 }
 
-void escreveEndereco(IO *io, Memoria *mem, char *endereco, clock_t t){
+void escreveEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t){
 	if(io->usedPages < io->numPaginas){
 		adicionaEndereco(io, mem, endereco, t);
 	}else{

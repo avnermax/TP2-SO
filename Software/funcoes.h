@@ -8,7 +8,7 @@ typedef struct T_Memoria{
     int bitR, bitM;
     int contaAcesso;
     float clockacesso;
-    char endereco[8];
+    unsigned endereco;
 }Memoria;
 
 typedef struct T_IO{
@@ -18,21 +18,21 @@ typedef struct T_IO{
     float faults;
 
     /* Dados passados na execução */
-    int tamPagina, tamMemoria, numPaginas;
+    unsigned tamPagina, tamMemoria;
     char politicaSubs[50], arq[50];
+    int numPaginas;
 }IO;
 
 /* io.c */
 IO * ioexec(char *argv[]);
 
 /* funcoes.c */
-void LRU(IO *io, Memoria *mem, char *endereco);
-void NRU(IO *io, Memoria *mem, char *endereco);
-void Segunda_chance(IO *io, Memoria *mem, char *endereco, clock_t t);
+void LRU(IO *io, Memoria *mem, unsigned endereco);
+void NRU(IO *io, Memoria *mem, unsigned endereco);
+void Segunda_chance(IO *io, Memoria *mem, unsigned endereco, clock_t t);
 void resetaBitR(Memoria *mem, IO *io);
-// char * shiftaEndereco(char *endereco, int s);
-// int calculaIndice(char *endereco, int tamPagina);
-void adicionaEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
-bool encontraEndereco(IO *io, Memoria *mem, char *endereco);
-void substituiEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
-void escreveEndereco(IO *io, Memoria *mem, char *endereco, clock_t t);
+unsigned calculaIndice(unsigned endereco, unsigned tamPagina);
+void adicionaEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
+bool encontraEndereco(IO *io, Memoria *mem, unsigned endereco);
+void substituiEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
+void escreveEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
