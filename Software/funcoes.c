@@ -18,7 +18,37 @@ void LRU(IO *io, Memoria *mem, unsigned endereco){
 }
 
 void NRU(IO *io, Memoria *mem, unsigned endereco){
+    for (int i = 0; i < io->numPaginas; i++){
+        if (mem[i].bitR == 0 && mem[i].bitM == 0){  //classe 00: nao referenciada, nao modificada 
+            strcpy(mem[i].endereco, endereco);
+            mem[i].bitM = 1;
+            mem[i].bitR = 1; 
+            return;
+        }
+    }
 
+    for (int i = 0; i < io->numPaginas; i++){
+        if (mem[i].bitR == 0 && mem[i].bitM == 1){  //classe 01: nao referenciada, modificada
+            strcpy(mem[i].endereco, endereco);
+            mem[i].bitR = 1;
+            return;
+        }
+    }
+
+    for (int i = 0; i < io->numPaginas; i++){
+        if (mem[i].bitR == 1 && mem[i].bitM == 0){   //classe 10: referenciada, nao modificada
+            strcpy(mem[i].endereco, endereco);
+            mem[i].bitM = 1;
+            return;
+        }
+    }
+
+    for (int i = 0; i < io->numPaginas; i++){
+        if (mem[i].bitR == 1 && mem[i].bitM == 1){   //classe 11: referenciada, modificada
+            strcpy(mem[i].endereco, endereco);
+            return;
+        }
+    }
 }
 
 void Segunda_chance(IO *io, Memoria *mem, unsigned endereco, clock_t t){
