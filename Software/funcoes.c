@@ -19,43 +19,38 @@ void LRU(IO *io, Memoria *mem, unsigned endereco){
 
 void NRU(IO *io, Memoria *mem, unsigned endereco){
     for (int i = 0; i < io->numPaginas; i++){
-<<<<<<< HEAD
         if (mem[i].bitR == 0 && mem[i].bitM == 0){  //classe 00: nao referenciada, nao modificada
-            strcpy(mem[i].endereco, endereco);
+            mem[i].endereco = endereco;
             mem[i].bitM = 1;
-=======
-        if (mem[i].bitR == 0 && mem[i].bitM == 0){  //classe 00: nao referenciada, nao modificada 
-            strcpy(mem[i].endereco, endereco);
-            mem[i].bitM = 1;
-            mem[i].bitR = 1; 
-            return;
         }
-    }
-
-    for (int i = 0; i < io->numPaginas; i++){
-        if (mem[i].bitR == 0 && mem[i].bitM == 1){  //classe 01: nao referenciada, modificada
-            strcpy(mem[i].endereco, endereco);
->>>>>>> 553eba9c3e40b6161360d62a09b63c8395863666
+        if (mem[i].bitR == 0 && mem[i].bitM == 0){  //classe 00: nao referenciada, nao modificada
+            mem[i].endereco = endereco;
+            mem[i].bitM = 1;
             mem[i].bitR = 1;
             return;
         }
     }
 
     for (int i = 0; i < io->numPaginas; i++){
-<<<<<<< HEAD
         if (mem[i].bitR == 0 && mem[i].bitM == 1){  //classe 01: nao referenciada, modificada
-            strcpy(mem[i].endereco, endereco);
+            mem[i].endereco = endereco;
             mem[i].bitR = 1;
             return;
         }
     }
-    
 
     for (int i = 0; i < io->numPaginas; i++){
-=======
->>>>>>> 553eba9c3e40b6161360d62a09b63c8395863666
+        if (mem[i].bitR == 0 && mem[i].bitM == 1){  //classe 01: nao referenciada, modificada
+            mem[i].endereco = endereco;
+            mem[i].bitR = 1;
+            return;
+        }
+    }
+
+
+    for (int i = 0; i < io->numPaginas; i++){
         if (mem[i].bitR == 1 && mem[i].bitM == 0){   //classe 10: referenciada, nao modificada
-            strcpy(mem[i].endereco, endereco);
+            mem[i].endereco = endereco;
             mem[i].bitM = 1;
             return;
         }
@@ -63,7 +58,7 @@ void NRU(IO *io, Memoria *mem, unsigned endereco){
 
     for (int i = 0; i < io->numPaginas; i++){
         if (mem[i].bitR == 1 && mem[i].bitM == 1){   //classe 11: referenciada, modificada
-            strcpy(mem[i].endereco, endereco);
+            mem[i].endereco = endereco;
             return;
         }
     }
