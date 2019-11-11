@@ -41,3 +41,5 @@ void adicionaEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
 int encontraEndereco(IO *io, Memoria *mem, unsigned endereco);
 void substituiEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
 void escreveEndereco(IO *io, Memoria *mem, unsigned endereco, clock_t t);
+void inicializar(hash* tabela[],IO *io);
+
