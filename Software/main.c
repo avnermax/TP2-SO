@@ -4,13 +4,16 @@ int main(int argc, char *argv[]){
     unsigned e;
     char t;
     int ret;
-    Memoria *memVirtual;
+	
     IO *io;
     FILE *arq;
     clock_t tempo, tAtual;
 
     io = ioexec(argv);
-
+	
+	hash* tabela[io->numPaginas];
+    inicializar(tabela,io);
+	
     // Abre o arquivo que sera testado.
     arq = fopen(io->arq, "r");
     if (arq == NULL){
@@ -19,7 +22,7 @@ int main(int argc, char *argv[]){
     }
 
     // Aloca vetor referente a memoria simulada.
-    memVirtual = (Memoria*) calloc((io->numPaginas), sizeof(Memoria));
+    //memVirtual = (Memoria*) calloc((io->numPaginas), sizeof(Memoria));
 
     printf("Executando o simulador...\n");
 
@@ -30,7 +33,6 @@ int main(int argc, char *argv[]){
     while(!feof(arq)){
         fscanf(arq, "%x %c\n", &e, &t);
 
-        // Criar a hash antes do while.
         // Procura na hash o endereço calculado pelo shift.
 
         if(t == 'W'){ // Escreve endereço na memoria.
