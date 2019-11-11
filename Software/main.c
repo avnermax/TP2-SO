@@ -29,6 +29,10 @@ int main(int argc, char *argv[]){
     // Simula fluxo de dados do arquivo para a memoria.
     while(!feof(arq)){
         fscanf(arq, "%x %c\n", &e, &t);
+
+        // Criar a hash antes do while.
+        // Procura na hash o endereço calculado pelo shift.
+
         if(t == 'W'){ // Escreve endereço na memoria.
             escreveEndereco(io, memVirtual, e, tempo);
         }else if(t == 'R'){ // Le endereço da memoria.
