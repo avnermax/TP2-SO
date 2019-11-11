@@ -11,6 +11,11 @@ typedef struct T_Memoria{
     unsigned endereco;
 }Memoria;
 
+typedef struct HASH { 
+	Memoria *mem; 
+	struct HASH* proximo; 
+}hash; 
+
 typedef struct T_IO{
     /* Variáveis de controle */
     int operacoes, leituras, escritas;
