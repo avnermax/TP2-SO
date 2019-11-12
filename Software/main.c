@@ -1,19 +1,17 @@
 #include "funcoes.h"
 
 int main(int argc, char *argv[]){
-    unsigned e;
+    unsigned e, page, indiceHash;
+    Memoria *mem;
+    Node *tabelaHash;
     char t;
-    int ret;
-	
+    int i;
     IO *io;
     FILE *arq;
     clock_t tempo, tAtual;
 
     io = ioexec(argv);
-	
-	hash* tabela[io->numPaginas];
-    inicializar(tabela,io);
-	
+
     // Abre o arquivo que sera testado.
     arq = fopen(io->arq, "r");
     if (arq == NULL){
@@ -21,40 +19,48 @@ int main(int argc, char *argv[]){
         return 0;
     }
 
-    // Aloca vetor referente a memoria simulada.
-    //memVirtual = (Memoria*) calloc((io->numPaginas), sizeof(Memoria));
+    // Inicializa tabela de hash que será a tabela invertida de endereços.
+    tabelaHash = inicializaNode(io);
+
+    // Cria memória física zerada.
+    mem = (Memoria*) calloc(io->numPaginas, sizeof(Memoria));
+    for(i = 0; i < io->numPaginas; i++){
+        mem[i].endereco = 0;
+    }
 
     printf("Executando o simulador...\n");
 
-    // Recebe como parametro as horas do sistema.
+    // Grava a hora do sistema para calculos posteriores.
 	tempo = clock();
 
     // Simula fluxo de dados do arquivo para a memoria.
     while(!feof(arq)){
         fscanf(arq, "%x %c\n", &e, &t);
 
-        // Procura na hash o endereço calculado pelo shift.
+        page = calculaIndice(e, io);
+        indiceHash = page % io->numPaginas;
+
+        if(procuraEnderecoLivre(io, mem) != -1){
+            // Se achar espaço livre na memoria fisica, adiciona o endereco.
+            adicionaEndereco(io, tabelaHash, mem, indiceHash, tempo);
+        }else{
+            // Se nao achar espaço livre, faz a politica de substituicao.
+            substituiEndereco(io, tabelaHash, mem, indiceHash, tempo);
+        }
 
         if(t == 'W'){ // Escreve endereço na memoria.
-            escreveEndereco(io, memVirtual, e, tempo);
+            io->escritas++;
         }else if(t == 'R'){ // Le endereço da memoria.
-            ret = encontraEndereco(io, memVirtual, e);
-            if(ret == 0){
-                io->hits++;
-            }else if(ret == 1){
-                io->misses++;
-                escreveEndereco(io, memVirtual, e, tempo);
-            }
             io->leituras++;
         }else{
             printf("Tipo de operação invalida.\n");
-            return 0;
+            exit(EXIT_SUCCESS);
         }
 
         // Reseta o bitR dos enderecos.
         tAtual = clock();
         if((double)(tAtual - tempo) / CLOCKS_PER_SEC >= 0.1){ // A cada 100ms.
-            resetaBitR(memVirtual, io);
+            resetaBitR(tabelaHash, io);
             tempo = clock();
         }
 
@@ -68,11 +74,15 @@ int main(int argc, char *argv[]){
     printf("Tecnica de substituicao: %s\n", io->politicaSubs);
     printf("Quantidade de PageHits: %d\n", io->hits);
     printf("Quantidade de PageMiss: %d\n", io->misses);
-    printf("Quantidade de PageFaults: %.1f\n", io->faults / io->escritas * 100);
+    printf("Quantidade de PageFaults: %.1f\n", io->faults);
     printf("Paginas lidas: %d\n", io->leituras);
     printf("Paginas escritas: %d\n", io->escritas);
-    printf("Numero de Writebacks: %d\n", io->writebacks);
     printf("Numero de operacoes executadas: %d\n", io->operacoes);
+
+    // Fecha arquivo e libera memórias alocadas.
+    fclose(arq);
+    //free(io);
+    //free(tabelaHash);
 
     return 0;
 }

@@ -11,8 +11,6 @@ IO * ioexec(char *argv[]){
     io->escritas = 0;
     io->hits = 0;
     io->misses = 0;
-    io->writebacks = 0;
-    io->usedPages = 0;
     io->faults = 0;
 
     // Grava a política de substituicao passado como argumento.
@@ -30,6 +28,8 @@ IO * ioexec(char *argv[]){
     if(io->tamPagina < 2 && io->tamPagina > 64){
         printf("Tamanho de pagina %dKB, invalido.\n", io->tamPagina);
         exit(EXIT_SUCCESS);
+    }else{
+        io->tamPagina = io->tamPagina * 1024;
     }
 
     // Grava o tamanho da memoria passado como argumento.
@@ -37,6 +37,8 @@ IO * ioexec(char *argv[]){
     if(io->tamMemoria < 128 && io->tamMemoria > 16384){
         printf("Tamanho de memoria %dKB, invalido.\n", io->tamMemoria);
         exit(EXIT_SUCCESS);
+    }else{
+        io->tamMemoria = io->tamMemoria * 1024;
     }
 
     io->numPaginas = io->tamMemoria / io->tamPagina;
