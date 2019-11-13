@@ -29,7 +29,7 @@ IO * ioexec(char *argv[]){
         printf("Tamanho de pagina %dKB, invalido.\n", io->tamPagina);
         exit(EXIT_SUCCESS);
     }else{
-        io->tamPagina = io->tamPagina * 1024;
+        io->tamPagina = io->tamPagina;
     }
 
     // Grava o tamanho da memoria passado como argumento.
@@ -38,7 +38,7 @@ IO * ioexec(char *argv[]){
         printf("Tamanho de memoria %dKB, invalido.\n", io->tamMemoria);
         exit(EXIT_SUCCESS);
     }else{
-        io->tamMemoria = io->tamMemoria * 1024;
+        io->tamMemoria = io->tamMemoria;
     }
 
     io->numPaginas = io->tamMemoria / io->tamPagina;

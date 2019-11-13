@@ -5,7 +5,7 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned endereco){
     int i, menor, c = 0;
 
     // Encontra o indice do endereco com menor numero de acesso.
-    menor = h[0].contaAcesso;
+    menor = mem[0].contaAcesso;
     for(i = 1; i < io->numPaginas; i++){
         if(h[i].contaAcesso < menor){
             menor = h[i].contaAcesso;
@@ -103,41 +103,38 @@ unsigned calculaIndice(unsigned endereco, IO *io){
 
 void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t){
 	/* Necessario conferir se não faltou nada */
-	long int i=indice,ad;
+	int endF, ad;
 	Node *temp, *anterior;
-	if(h[i].prox ==NULL){
- 		io->faults++;
-		h[indice].endereco = indice;
+	if(h[indice].prox == NULL){
+        // Marca falta de página.
+        io->faults++;
+
 		h[indice].endereco = indice;
 		h[indice].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
 		h[indice].bitR = 0;
     	h[indice].bitM = 1;
    		h[indice].contaAcesso++;
-		
  	}else{
-		temp=h[i].prox;
-		while (temp != NULL){
-			if (temp->endereço == indice){
-				ad = 1;		
+		temp = h[indice].prox;
+		while(temp != NULL){
+			if (temp->endereco == indice){
+				ad = 1;
 				break;
 			}else{
 				ad = 0;
 				anterior = temp;
-				temp = temp->next;		
+				temp = temp->prox;
 			}
 		}
-		if(ad==0){
+		if(ad == 0){
+            // Marca falta de página
     		io->faults++;
-			endF = procuraEderecoLivre(io, mem);;
-			Node *aux = (Node *)malloc(sizeof(Node));
-			mem[endF] = indice;
-			//vetorBitTempo[endFisico] = tempoRelogio;
-			//aux->endereco = indice;
-			//aux->enderecoFisico = endF;
-			//aux->operacao = rw;
-			//aux->vezesReferenciada = acessos;
-			aux->next = NULL;
-			anterior->next = aux;
+
+			endF = procuraEnderecoLivre(io, mem);;
+			Node *aux = (Node*) malloc(sizeof(Node));
+			mem[endF].endereco = indice;
+			aux->prox = NULL;
+			anterior->prox = aux;
 			aux->endereco = indice;
 			aux->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
 			aux->bitR = 0;
