@@ -21,8 +21,7 @@ typedef struct T_Node{
 
 typedef struct T_IO{
     /* Variáveis de controle */
-    int operacoes, leituras, escritas, hits;
-    float faults;
+    int operacoes, leituras, escritas, hits, faults;
 
     /* Dados passados na execução */
     unsigned tamPagina, tamMemoria;

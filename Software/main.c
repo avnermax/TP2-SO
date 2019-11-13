@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
     printf("Numero de paginas: %d\n", io->numPaginas);
     printf("Tecnica de substituicao: %s\n", io->politicaSubs);
     printf("Quantidade de PageHits: %d\n", io->hits);
-    printf("Quantidade de PageFaults: %.1f\n", io->faults);
+    printf("Quantidade de PageFaults: %d\n", io->faults);
     printf("Paginas lidas: %d\n", io->leituras);
     printf("Paginas escritas: %d\n", io->escritas);
     printf("Numero de operacoes executadas: %d\n", io->operacoes);
