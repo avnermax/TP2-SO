@@ -34,30 +34,32 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
     aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     menorTemp[0] = h[indice].bitR;
     menorTemp[1] = h[indice].bitM;
-    while(aux != NULL){ // Procura entre todos da lista encadeada, o de menor classe.
-        if(aux->bitR == 0 && aux->bitM == 0){
-            aux->pagina = pagina;
-            aux->bitM = 1;
-            aux->bitR = 1;
-            menor = aux;
-            break;
-        }else if(aux->bitR < menorTemp[0]){
-            menorTemp[0] = aux->bitR;
-            menorTemp[1] = aux->bitM;
-            menor = aux;
-        }else if(aux->bitR == menorTemp[0]){
-            if(aux->bitM < menorTemp[1]){
+    if(aux != NULL){
+        while(aux != NULL){ // Procura entre todos da lista encadeada, o de menor classe.
+            if(aux->bitR == 0 && aux->bitM == 0){
+                aux->pagina = pagina;
+                aux->bitM = 1;
+                aux->bitR = 1;
+                menor = aux;
+                break;
+            }else if(aux->bitR < menorTemp[0]){
+                menorTemp[0] = aux->bitR;
                 menorTemp[1] = aux->bitM;
                 menor = aux;
+            }else if(aux->bitR == menorTemp[0]){
+                if(aux->bitM < menorTemp[1]){
+                    menorTemp[1] = aux->bitM;
+                    menor = aux;
+                }
+            }else{
+                menor = aux;
             }
-        }else{
-            menor = aux;
+            aux = aux->prox;
         }
-        aux = aux->prox;
-    }
 
-    menor->pagina = pagina;
-    menor->contaAcesso++; // Conta acesso do endereco recem copiado.
+        menor->pagina = pagina;
+        menor->contaAcesso++; // Conta acesso do endereco recem copiado.
+    }
 }
 
 void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
