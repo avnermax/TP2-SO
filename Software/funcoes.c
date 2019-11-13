@@ -56,6 +56,9 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
 
     menor->pagina = pagina;
     menor->contaAcesso++; // Conta acesso do endereco recem copiado.
+    
+    /* Não sei se está gravando na hash o valor do endereço, a partir do 'menor'...
+    depois me ajuda a testar isso. (mas ao meu ver, nem precisa. Por mim deixa do jeito que tá e sucesso. kkkkkk) */
 }
 
 void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
