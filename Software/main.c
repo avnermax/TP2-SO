@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
     Memoria *mem;
     Node *tabelaHash;
     char t;
-    int i, s;
+    int i, s = 0;
     IO *io;
     FILE *arq;
     clock_t tempo, tAtual;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     // Cria memória física zerada.
     mem = (Memoria*) calloc(io->numPaginas, sizeof(Memoria));
     for(i = 0; i < io->numPaginas; i++){
-        mem[i].endereco = -1;
+        mem[i].endereco = 0;
     }
 
     printf("Executando o simulador...\n");
@@ -41,13 +41,12 @@ int main(int argc, char *argv[]){
         indiceHash = page % io->numPaginas;
 
         s = procuraEnderecoLivre(io, mem);
-        if(s != -1){
+        if(mem[s].endereco == 0){
             // Se achar espaço livre na memoria fisica, adiciona o endereco.
-            adicionaEndereco(io, tabelaHash, mem, indiceHash, tempo);
+            adicionaEndereco(io, tabelaHash, mem, indiceHash, page, tempo);
         }else{
-            printf("BLE\n");
             // Se nao achar espaço livre, faz a politica de substituicao.
-            substituiEndereco(io, tabelaHash, mem, indiceHash, tempo);
+            substituiEndereco(io, tabelaHash, mem, page, tempo);
         }
 
         if(t == 'W'){ // Escreve endereço na memoria.
@@ -75,7 +74,6 @@ int main(int argc, char *argv[]){
     printf("Numero de paginas: %d\n", io->numPaginas);
     printf("Tecnica de substituicao: %s\n", io->politicaSubs);
     printf("Quantidade de PageHits: %d\n", io->hits);
-    printf("Quantidade de PageMiss: %d\n", io->misses);
     printf("Quantidade de PageFaults: %.1f\n", io->faults);
     printf("Paginas lidas: %d\n", io->leituras);
     printf("Paginas escritas: %d\n", io->escritas);

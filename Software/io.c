@@ -10,7 +10,6 @@ IO * ioexec(char *argv[]){
     io->leituras = 0;
     io->escritas = 0;
     io->hits = 0;
-    io->misses = 0;
     io->faults = 0;
 
     // Grava a política de substituicao passado como argumento.

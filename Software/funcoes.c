@@ -1,23 +1,28 @@
 #include "funcoes.h"
 
 /* POLITICAS DE SUBSTITUICAO */
-void LRU(IO *io, Node *h, Memoria *mem, unsigned endereco){
+void LRU(IO *io, Node *h, Memoria *mem, unsigned pagina){
     int i, menor, c = 0;
 
     // Encontra o indice do endereco com menor numero de acesso.
-    menor = h[0].contaAcesso;
-    for(i = 1; i < io->numPaginas; i++){
-        if(h[i].contaAcesso < menor){
+    for(i = 0; i < io->numPaginas; i++){
+        if(mem[i].endereco == pagina){ // Substitui na página específica.
+            io->hits++;
+            aux = h[i].prox;
             menor = h[i].contaAcesso;
-            c = i; // Recebe o indice do endereco com menor numero de acesso.
+            while(aux->prox!=NULL){
+                if(aux->contaAcesso < menor){
+                    menor = h[i].contaAcesso; // Recebe o indice do endereco com menor numero de acesso.
+                }
+            }
         }
     }
 
-    h[c].endereco = endereco;
+    h[c].pagina = pagina;
     h[c].contaAcesso++; // Conta acesso do endereco recem copiado.
 }
 
-void NRU(IO *io, Node *h, Memoria *mem, unsigned endereco){
+void NRU(IO *io, Node *h, Memoria *mem, unsigned pagina){
     int menorTemp[2], cont, i;
     Node *temp, *aux;
 
@@ -25,43 +30,51 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned endereco){
     temp = (Node*) malloc(sizeof(Node)); // Armazena node de menor classe.
 
     cont = 0;
-    menorTemp[0] = h[0].bitR;
-    menorTemp[1] = h[0].bitM;
-    printf("teste\n");
-    for(i = 1; i < io->numPaginas; i++){
-        while(aux->prox != NULL){
-            if (h[i].bitR == 0 && h[i].bitM == 0){
-                h[i].endereco = endereco;
-                h[i].bitM = 1;
-                h[i].bitR = 1;
-                return;
-            }else if(h[i].bitR < menorTemp[0]){
-                menorTemp[0] = h[i].bitR;
-                menorTemp[1] = h[i].bitM;
-                temp = h[i].prox;
-                cont = i;
-            }else if(h[i].bitR == menorTemp[0]){
-                if(h[i].bitM < menorTemp[1]){
-                    menorTemp[1] = h[i].bitM;
-                    temp = h[i].prox;
+    for(i = 0; i < io->numPaginas; i++){
+        if(mem[i].endereco == pagina){ // Substitui na página específica.
+            menorTemp[0] = h[i].bitR;
+            menorTemp[1] = h[i].bitM;
+            io->hits++;
+            do{ // Procura entre todos da lista encadeada.
+                printf("Aquui\n");
+                aux = h[i].prox;
+                printf("%d %d\n",aux->bitR,aux->bitM);
+                if (aux->bitR == 0 && aux->bitM == 0){
+                    printf("aquui 00\n");
+                    aux->pagina = pagina;
+                    aux->bitM = 1;
+                    aux->bitR = 1;
+                    aux = h[i].prox;
+                    return;
+                }else if(aux->bitR < menorTemp[0]){
+                    printf("aquui 0X\n");
+                    menorTemp[0] = aux->bitR;
+                    menorTemp[1] = aux->bitM;
+                    temp = aux;
                     cont = i;
+                }else if(aux->bitR == menorTemp[0]){
+                    if(aux->bitM < menorTemp[1]){
+                        printf("aquui X0\n");
+                        menorTemp[1] = aux->bitM;
+                        temp = aux;
+                        cont = i;
+                    }
+                }else{
+                    temp = aux;
                 }
-            }else{
-                temp = h[i].prox;
-            }
-            aux = h[i].prox;
+            }while(aux->prox != NULL);
         }
     }
 
     h[cont].prox = temp->prox;
-    h[cont].endereco = temp->endereco;
+    h[cont].pagina = temp->pagina;
     h[cont].bitR = temp->bitR;
     h[cont].bitM = temp->bitM;
     h[cont].clockacesso = temp->clockacesso;
     h[cont].contaAcesso = temp->contaAcesso;
 }
 
-void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t){
+void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t){
     int i, c = 0;
     float menorClock;
 
@@ -76,7 +89,7 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t)
 
     if(h[c].bitR == 0){
         // Substitue mem[c]
-        h[c].endereco = endereco;
+        h[c].pagina = pagina;
         h[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         h[c].bitR = 1;
         h[c].contaAcesso++; // Conta acesso do endereco recem copiado.
@@ -84,7 +97,7 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t)
         // Nova chance a mem[c]
         h[c].bitR = 0;
         h[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-        Segunda_chance(io, h, mem, endereco, t);
+        Segunda_chance(io, h, mem, pagina, t);
     }
 }
 
@@ -111,7 +124,7 @@ unsigned calculaIndice(unsigned endereco, IO *io){
     return page;
 }
 
-void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t){
+void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
 	/* Necessario conferir se não faltou nada */
 	int endF, ad = 0;
 	Node *temp, *anterior;
@@ -121,11 +134,15 @@ void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t)
         io->faults++;
 
         temp = (Node*) malloc(sizeof(Node));
-        endF = procuraEnderecoLivre(io, mem);
 
-        mem[endF].endereco = indice;
+        endF = procuraEnderecoLivre(io, mem);
+        mem[endF].endereco = pagina;
+        printf("1\n");
+        printf("endF:%d\n", endF);
+        printf("mem:%d\n", mem[endF].endereco);
+
         temp->prox = NULL;
-        temp->endereco = indice;
+        temp->pagina = pagina;
         temp->endFisico = endF;
         temp->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         temp->bitR = 0;
@@ -135,10 +152,12 @@ void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t)
         h[indice].prox = temp;
  	}else{
 		temp = h[indice].prox;
+
 		while(temp != NULL){
-			if (temp->endereco == indice){
+			if(temp->pagina == pagina){
 				ad = 1;
-                io->hits++;
+                //io->hits++;
+                //printf("\n\nHIT pagina:%d\n\n", pagina);
 				break;
 			}else{
 				anterior = temp;
@@ -151,16 +170,21 @@ void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t)
             io->faults++;
 
             endF = procuraEnderecoLivre(io, mem);
+            mem[endF].endereco = pagina;
+            printf("2\n");
+            printf("endF:%d\n", endF);
+            printf("mem:%d\n", mem[endF].endereco);
+
             Node *aux = (Node*) malloc(sizeof(Node));
-            mem[endF].endereco = indice;
             aux->prox = NULL;
-            anterior->prox = aux;
-            aux->endereco = indice;
+            aux->pagina = pagina;
             aux->endFisico = endF;
             aux->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
             aux->bitR = 0;
             aux->bitM = 1;
             aux->contaAcesso++; // Conta acesso do endereco recem copiado.
+
+            anterior->prox = aux;
         }
     }
 }
@@ -169,7 +193,7 @@ int procuraEnderecoLivre(IO *io, Memoria *mem){
     int i;
 
     for(i = 0; i < io->numPaginas; i++){
-		if(mem[i].endereco == -1){
+		if(mem[i].endereco == 0){
 			return i;
 		}
 	}
@@ -178,14 +202,13 @@ int procuraEnderecoLivre(IO *io, Memoria *mem){
 	return -1;
 }
 
-void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t){
-	if(strcmp(io->politicaSubs, "lru") == 0){
-		LRU(io, h, mem, endereco);
+void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t){
+    if(strcmp(io->politicaSubs, "lru") == 0){
+        LRU(io, h, mem, pagina);
 	}else if(strcmp(io->politicaSubs, "nru") == 0){
-        printf("\ntesteNRU\n");
-		NRU(io, h, mem, endereco);
+		NRU(io, h, mem, pagina);
 	}else if(strcmp(io->politicaSubs, "segunda_chance") == 0){
-		Segunda_chance(io, h, mem, endereco, t);
+        Segunda_chance(io, h, mem, pagina, t);
 	}
 }
 
@@ -201,61 +224,8 @@ Node * inicializaNode(IO *io){
         tNode[i].bitM = 0;
         tNode[i].contaAcesso = 0;
         tNode[i].clockacesso = 0;
-        tNode[i].endereco = -1;
+        tNode[i].pagina = -1;
     }
 
     return tNode;
-}
-
-void remover(Memoria *mem, Node *h, IO *io, int posicao, unsigned algSub){
-
-	Node *temp, *anterior;
-	int ag, indice, i;
-	//procura na tabela de pagina invertida o nó desejado
-	for (i = 0; i < tamMem; i++){
-		temp = h[i].prox;
-		anterior = h[i].prox;
-		while(temp != NULL){
-			//esse Ã© o caso de achar o cara na memoria que trocou de posiÃ§Ã£o, para os algoritmos nru e segunda chance
-			if((temp->endereco == mem[posicao]) && (algSub == "nru"||algSub == "Segunda_chance")){
-				ag = 1;
-				indice = i;	
-				break;
-			//esse Ã© o caso de achar o elemento menos recentemente utilizado, pro algoritmo lru
-			}else if((temp->endereco == minimo->endereco) && (algSub == "lru")){
-				flag = 1;
-				indice = i;	
-	
-				break;
-			}
-			anterior = temp;
-			temp = temp->prox;
-		}
-		if(ag == 1){
-			break;
-		}
-	}
-	
-	//eliminaÃ§Ã£o de um nÃ³ na lista encadeada, no caso que sÃ³ tem aquele nÃ³ na lista
-	if(anterior->prox == temp->prox){
-		if(algSub == "lru"){
-			mem[(h[indice].prox)->enderecoFisico] = -1;
-		}
-
-		h[indice].prox = temp->prox;
-	}else{
-		if(anterior->endereco == temp->endereco){
-			//esse Ã© o caso que sÃ³ tem dois elementos na lista
-			h[indice].prox = temp->prox;
-		}else{
-			//esse Ã© o caso normal, de ter alguÃ©m antes e depois
-			anterior->prox = temp->prox;
-		}	
-
-		//se for o lru eu jÃ¡ seto a posiÃ§Ã£o na memoria como vazia
-		if(algSub == 1){
-			mem[(h[indice].prox)->enderecoFisico] = -1;
-		}
-	}
-
 }

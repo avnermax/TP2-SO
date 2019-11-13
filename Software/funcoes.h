@@ -13,7 +13,7 @@ typedef struct T_Node{
     int bitR, bitM, endFisico;
     int contaAcesso;
     float clockacesso;
-    unsigned endereco;
+    unsigned pagina;
 
     /* Aponta para próximo endereço na hash */
 	struct T_Node* prox;
@@ -21,7 +21,7 @@ typedef struct T_Node{
 
 typedef struct T_IO{
     /* Variáveis de controle */
-    int operacoes, leituras, escritas, hits, misses;
+    int operacoes, leituras, escritas, hits;
     float faults;
 
     /* Dados passados na execução */
@@ -34,12 +34,12 @@ typedef struct T_IO{
 IO * ioexec(char *argv[]);
 
 /* funcoes.c */
-void LRU(IO *io, Node *h, Memoria *mem, unsigned endereco);
-void NRU(IO *io, Node *h, Memoria *mem, unsigned endereco);
-void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t);
+void LRU(IO *io, Node *h, Memoria *mem, unsigned pagina);
+void NRU(IO *io, Node *h, Memoria *mem, unsigned pagina);
+void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t);
 void resetaBitR(Node *h, IO *io);
 unsigned calculaIndice(unsigned endereco, IO *io);
-void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t);
+void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 int procuraEnderecoLivre(IO *io, Memoria *mem);
-void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned endereco, clock_t t);
+void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t);
 Node * inicializaNode(IO *io);
