@@ -102,17 +102,50 @@ unsigned calculaIndice(unsigned endereco, IO *io){
 }
 
 void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, clock_t t){
-
-    /* REFAZER ESSA FUNÇÂO UTILIZANDO HASH */
-
-    // Node *tmp, *anterior;
-
-    h[indice].endereco = indice;
-	h[indice].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-	h[indice].bitR = 1;
-    h[indice].bitM = 1;
-    h[indice].contaAcesso++; // Conta acesso do endereco recem copiado.
-
+	/* Necessario conferir se não faltou nada */
+	long int i=indice,ad;
+	Node *temp, *anterior;
+	if(h[i].prox ==NULL){
+ 		io->faults++;
+		h[indice].endereco = indice;
+		h[indice].endereco = indice;
+		h[indice].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+		h[indice].bitR = 0;
+    	h[indice].bitM = 1;
+   		h[indice].contaAcesso++;
+		
+ 	}else{
+		temp=h[i].prox;
+		while (temp != NULL){
+			if (temp->endereço == indice){
+				ad = 1;		
+				break;
+			}else{
+				ad = 0;
+				anterior = temp;
+				temp = temp->next;		
+			}
+		}
+		if(ad==0){
+    		io->faults++;
+			endF = procuraEderecoLivre(io, mem);;
+			Node *aux = (Node *)malloc(sizeof(Node));
+			mem[endF] = indice;
+			//vetorBitTempo[endFisico] = tempoRelogio;
+			//aux->endereco = indice;
+			//aux->enderecoFisico = endF;
+			//aux->operacao = rw;
+			//aux->vezesReferenciada = acessos;
+			aux->next = NULL;
+			anterior->next = aux;
+			aux->endereco = indice;
+			aux->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+			aux->bitR = 0;
+    		aux->bitM = 1;
+    		aux->contaAcesso++; // Conta acesso do endereco recem copiado.
+		}
+	}
+	io->operacoes++;
 }
 
 int procuraEnderecoLivre(IO *io, Memoria *mem){
