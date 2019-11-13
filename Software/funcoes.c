@@ -206,3 +206,56 @@ Node * inicializaNode(IO *io){
 
     return tNode;
 }
+
+void remover(Memoria *mem, Node *h, IO *io, int posicao, unsigned algSub){
+
+	Node *temp, *anterior;
+	int ag, indice, i;
+	//procura na tabela de pagina invertida o nó desejado
+	for (i = 0; i < tamMem; i++){
+		temp = h[i].prox;
+		anterior = h[i].prox;
+		while(temp != NULL){
+			//esse Ã© o caso de achar o cara na memoria que trocou de posiÃ§Ã£o, para os algoritmos nru e segunda chance
+			if((temp->endereco == mem[posicao]) && (algSub == "nru"||algSub == "Segunda_chance")){
+				ag = 1;
+				indice = i;	
+				break;
+			//esse Ã© o caso de achar o elemento menos recentemente utilizado, pro algoritmo lru
+			}else if((temp->endereco == minimo->endereco) && (algSub == "lru")){
+				flag = 1;
+				indice = i;	
+	
+				break;
+			}
+			anterior = temp;
+			temp = temp->prox;
+		}
+		if(ag == 1){
+			break;
+		}
+	}
+	
+	//eliminaÃ§Ã£o de um nÃ³ na lista encadeada, no caso que sÃ³ tem aquele nÃ³ na lista
+	if(anterior->prox == temp->prox){
+		if(algSub == "lru"){
+			mem[(h[indice].prox)->enderecoFisico] = -1;
+		}
+
+		h[indice].prox = temp->prox;
+	}else{
+		if(anterior->endereco == temp->endereco){
+			//esse Ã© o caso que sÃ³ tem dois elementos na lista
+			h[indice].prox = temp->prox;
+		}else{
+			//esse Ã© o caso normal, de ter alguÃ©m antes e depois
+			anterior->prox = temp->prox;
+		}	
+
+		//se for o lru eu jÃ¡ seto a posiÃ§Ã£o na memoria como vazia
+		if(algSub == 1){
+			mem[(h[indice].prox)->enderecoFisico] = -1;
+		}
+	}
+
+}
