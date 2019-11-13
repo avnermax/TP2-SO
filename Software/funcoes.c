@@ -5,7 +5,7 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned endereco){
     int i, menor, c = 0;
 
     // Encontra o indice do endereco com menor numero de acesso.
-    menor = mem[0].contaAcesso;
+    menor = h[0].contaAcesso;
     for(i = 1; i < io->numPaginas; i++){
         if(h[i].contaAcesso < menor){
             menor = h[i].contaAcesso;
