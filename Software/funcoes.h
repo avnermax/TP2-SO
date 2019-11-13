@@ -16,7 +16,7 @@ typedef struct T_Node{
     unsigned pagina;
 
     /* Aponta para próximo endereço na hash */
-	struct T_Node* prox;
+	struct T_Node *prox;
 }Node;
 
 typedef struct T_IO{
@@ -34,12 +34,12 @@ typedef struct T_IO{
 IO * ioexec(char *argv[]);
 
 /* funcoes.c */
-void LRU(IO *io, Node *h, Memoria *mem, unsigned pagina);
-void NRU(IO *io, Node *h, Memoria *mem, unsigned pagina);
-void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t);
+void LRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina);
+void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina);
+void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 void resetaBitR(Node *h, IO *io);
 unsigned calculaIndice(unsigned endereco, IO *io);
-void adicionaEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
+void adicionaEndereco(IO *io, Node *hash, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 int procuraEnderecoLivre(IO *io, Memoria *mem);
-void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned pagina, clock_t t);
+void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 Node * inicializaNode(IO *io);

@@ -37,16 +37,16 @@ int main(int argc, char *argv[]){
     while(!feof(arq)){
         fscanf(arq, "%x %c\n", &e, &t);
 
-        page = calculaIndice(e, io);
-        indiceHash = page % io->numPaginas;
+        page = calculaIndice(e, io); // Calcula a respectiva pagina do endereço recebido do arquivo.
+        indiceHash = page % io->numPaginas; // Calcula a posicao da tabela hash.
 
         s = procuraEnderecoLivre(io, mem);
-        if(mem[s].endereco == 0){
+        if(s >= 0){
             // Se achar espaço livre na memoria fisica, adiciona o endereco.
             adicionaEndereco(io, tabelaHash, mem, indiceHash, page, tempo);
-        }else{
+        }else if(s == -1){
             // Se nao achar espaço livre, faz a politica de substituicao.
-            substituiEndereco(io, tabelaHash, mem, page, tempo);
+            substituiEndereco(io, tabelaHash, mem, indiceHash, page, tempo);
         }
 
         if(t == 'W'){ // Escreve endereço na memoria.
