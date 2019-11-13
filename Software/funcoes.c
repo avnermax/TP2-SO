@@ -9,16 +9,18 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
 
     io->hits++;
     aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
-    menor = aux;
-    while(aux != NULL){
-        if(aux->contaAcesso < menor->contaAcesso){
-            menor = aux; // Recebe o NO com menor valor de numero de acesso.
+    menor = h[indice].prox;
+    if(menor != NULL){
+        while(aux != NULL){
+            if(aux->contaAcesso < menor->contaAcesso){
+                menor = aux; // Recebe o NO com menor valor de numero de acesso.
+            }
+            aux = aux->prox;
         }
-        aux = aux->prox;
-    }
 
-    menor->pagina = pagina;
-    menor->contaAcesso++; // Conta acesso do endereco recem copiado.
+        menor->pagina = pagina;
+        menor->contaAcesso++; // Conta acesso do endereco recem copiado.
+    }
 }
 
 void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
@@ -56,9 +58,6 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
 
     menor->pagina = pagina;
     menor->contaAcesso++; // Conta acesso do endereco recem copiado.
-
-    /* Não sei se está gravando na hash o valor do endereço, a partir do 'menor'...
-    depois me ajuda a testar isso. (mas ao meu ver, nem precisa. Por mim deixa do jeito que tá e sucesso. kkkkkk) */
 }
 
 void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
@@ -71,20 +70,23 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pag
     menorClock = h[indice].prox; // Armazena em 'menorClock' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     aux = h[indice].prox;
 
-    if(menorClock->bitR == 0){
-        menorClock->pagina = pagina;
-        menorClock->bitR = 1;
-        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-        menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
-    }else{
-        menorClock->bitR = 0;
-        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-        while(aux != NULL) aux = aux->prox; // Caminha até o NULL.
+    if(menorClock != NULL){
+        if(menorClock->bitR == 0){
+            menorClock->pagina = pagina;
+            menorClock->bitR = 1;
+            menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+            menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
+        }else{
+            menorClock->bitR = 0;
+            menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+            while(aux != NULL) aux = aux->prox; // Caminha até o NULL.
 
-        // Troca as apontadores para dar uma nova chance ao endereco com menor clock.
-        aux = h[indice].prox;
-        h[indice].prox = menorClock->prox;
-        menorClock->prox = NULL;
+            // Troca as apontadores para dar uma nova chance ao endereco com menor clock.
+            aux = h[indice].prox;
+            h[indice].prox = menorClock->prox;
+            menorClock->prox = NULL;
+            menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
+        }
     }
 }
 
