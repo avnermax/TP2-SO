@@ -28,4 +28,4 @@ Passos para execução e finalização:
 
 Tenha uma Boa Experiencia seguindo esses passos. E Obrigado por ler.
 
-Atenciosamente:Avner,Rodrigo,Lucas 
+Atenciosamente:Avner, Rodrigo e Lucas.
