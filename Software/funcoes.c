@@ -8,7 +8,7 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
     menor = (Node*) malloc(sizeof(Node));
 
     io->hits++;
-    aux = h[indice].prox;
+    aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     menor = aux;
     while(aux != NULL){
         if(aux->contaAcesso < menor->contaAcesso){
@@ -29,9 +29,9 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
     menor = (Node*) malloc(sizeof(Node)); // Armazena node de menor classe.
 
     io->hits++;
+    aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     menorTemp[0] = h[indice].bitR;
     menorTemp[1] = h[indice].bitM;
-    aux = h[indice].prox; // Armazena em 'aux' o proximo NO, a partir do cabeça dado pela posição 'indice';
     while(aux != NULL){ // Procura entre todos da lista encadeada, o de menor classe.
         if(aux->bitR == 0 && aux->bitM == 0){
             aux->pagina = pagina;
@@ -56,7 +56,7 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
 
     menor->pagina = pagina;
     menor->contaAcesso++; // Conta acesso do endereco recem copiado.
-    
+
     /* Não sei se está gravando na hash o valor do endereço, a partir do 'menor'...
     depois me ajuda a testar isso. (mas ao meu ver, nem precisa. Por mim deixa do jeito que tá e sucesso. kkkkkk) */
 }
@@ -139,8 +139,7 @@ void adicionaEndereco(IO *io, Node *hash, Memoria *mem, unsigned indice, unsigne
 		while(temp != NULL){
 			if(temp->pagina == pagina){
 				ad = 1;
-                //io->hits++;
-                //printf("\n\nHIT pagina:%d\n\n", pagina);
+                io->hits++;
 				break;
 			}else{
 				anterior = temp;
