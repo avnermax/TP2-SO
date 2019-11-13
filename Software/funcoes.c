@@ -62,29 +62,31 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
 }
 
 void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
-    int i, c = 0;
-    float menorClock;
+    Node *menorClock, *aux;
+
+    menorClock = (Node*) malloc(sizeof(Node));
+    aux = (Node*) malloc(sizeof(Node));
 
     // Encontra o indice do endereco com o acesso mais antigo.
-    menorClock = h[0].clockacesso;
-    for(i = 1; i < io->numPaginas; i++){
-        if(h[i].clockacesso < menorClock){
-            menorClock = h[i].clockacesso;
-            c = i; // Recebe o indice do menor clock encontrado.
-        }
-    }
+    menorClock = h[indice].prox;
+    aux = h[indice].prox;
 
-    if(h[c].bitR == 0){
+    if(menorClock->bitR == 0){
         // Substitue mem[c]
-        h[c].pagina = pagina;
-        h[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-        h[c].bitR = 1;
-        h[c].contaAcesso++; // Conta acesso do endereco recem copiado.
+        menorClock->pagina = pagina;
+        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+        menorClock->bitR = 1;
+        menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
     }else{
         // Nova chance a mem[c]
-        h[c].bitR = 0;
-        h[c].clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
-        Segunda_chance(io, h, mem, indice, pagina, t);
+        menorClock->bitR = 0;
+        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+        while(aux != NULL) aux = aux->prox; // Caminha até o NULL.
+
+        // Troca as apontadores para dar uma nova chance ao endereco com menor clock.
+        h[indice].prox = menorClock->prox;
+        aux->prox = menorClock;
+        menorClock->prox = NULL;
     }
 }
 
