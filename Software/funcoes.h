@@ -10,7 +10,7 @@ typedef struct T_Memoria{
 
 typedef struct T_Node{
     /* Variáveis de controle */
-    int bitR, bitM;
+    int bitR, bitM, endFisico;
     int contaAcesso;
     float clockacesso;
     unsigned endereco;

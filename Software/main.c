@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
     Memoria *mem;
     Node *tabelaHash;
     char t;
-    int i;
+    int i, s;
     IO *io;
     FILE *arq;
     clock_t tempo, tAtual;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
     // Cria memória física zerada.
     mem = (Memoria*) calloc(io->numPaginas, sizeof(Memoria));
     for(i = 0; i < io->numPaginas; i++){
-        mem[i].endereco = 0;
+        mem[i].endereco = -1;
     }
 
     printf("Executando o simulador...\n");
@@ -40,10 +40,12 @@ int main(int argc, char *argv[]){
         page = calculaIndice(e, io);
         indiceHash = page % io->numPaginas;
 
-        if(procuraEnderecoLivre(io, mem) != -1){
+        s = procuraEnderecoLivre(io, mem);
+        if(s != -1){
             // Se achar espaço livre na memoria fisica, adiciona o endereco.
             adicionaEndereco(io, tabelaHash, mem, indiceHash, tempo);
         }else{
+            printf("BLE\n");
             // Se nao achar espaço livre, faz a politica de substituicao.
             substituiEndereco(io, tabelaHash, mem, indiceHash, tempo);
         }
