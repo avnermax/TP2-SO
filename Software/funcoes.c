@@ -67,25 +67,23 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pag
     menorClock = (Node*) malloc(sizeof(Node));
     aux = (Node*) malloc(sizeof(Node));
 
-    // Encontra o indice do endereco com o acesso mais antigo.
-    menorClock = h[indice].prox;
+    io->hits++;
+    menorClock = h[indice].prox; // Armazena em 'menorClock' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     aux = h[indice].prox;
 
     if(menorClock->bitR == 0){
-        // Substitue mem[c]
         menorClock->pagina = pagina;
-        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         menorClock->bitR = 1;
+        menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
     }else{
-        // Nova chance a mem[c]
         menorClock->bitR = 0;
         menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
         while(aux != NULL) aux = aux->prox; // Caminha até o NULL.
 
         // Troca as apontadores para dar uma nova chance ao endereco com menor clock.
+        aux = h[indice].prox;
         h[indice].prox = menorClock->prox;
-        aux->prox = menorClock;
         menorClock->prox = NULL;
     }
 }
