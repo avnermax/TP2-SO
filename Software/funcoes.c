@@ -7,7 +7,6 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
     aux = (Node*) malloc(sizeof(Node));
     menor = (Node*) malloc(sizeof(Node));
 
-    io->hits++;
     aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     menor = h[indice].prox;
     if(menor != NULL){
@@ -18,7 +17,9 @@ void LRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
             aux = aux->prox;
         }
 
+        io->hits++;
         menor->pagina = pagina;
+        mem[menor->endFisico].endereco = pagina;
         menor->contaAcesso++; // Conta acesso do endereco recem copiado.
     }
 }
@@ -30,7 +31,6 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
     aux = (Node*) malloc(sizeof(Node)); // Armazena node para caminhar na lista encadeada.
     menor = (Node*) malloc(sizeof(Node)); // Armazena node de menor classe.
 
-    io->hits++;
     aux = h[indice].prox; // Armazena em 'aux' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     menorTemp[0] = h[indice].bitR;
     menorTemp[1] = h[indice].bitM;
@@ -57,7 +57,9 @@ void NRU(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina){
             aux = aux->prox;
         }
 
+        io->hits++;
         menor->pagina = pagina;
+        mem[menor->endFisico].endereco = pagina;
         menor->contaAcesso++; // Conta acesso do endereco recem copiado.
     }
 }
@@ -68,15 +70,16 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pag
     menorClock = (Node*) malloc(sizeof(Node));
     aux = (Node*) malloc(sizeof(Node));
 
-    io->hits++;
     menorClock = h[indice].prox; // Armazena em 'menorClock' o proximo NO do NO cabeça, tendo o NO cabeça dado pelo 'indice';
     aux = h[indice].prox;
 
     if(menorClock != NULL){
         if(menorClock->bitR == 0){
-            menorClock->pagina = pagina;
-            menorClock->bitR = 1;
+            io->hits++;
             menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
+            menorClock->bitR = 1;
+            menorClock->pagina = pagina;
+            mem[menorClock->endFisico].endereco = pagina;
             menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
         }else{
             menorClock->bitR = 0;
