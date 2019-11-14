@@ -16,7 +16,7 @@ Passos para execução e finalização:
 
 3º Com o fim do 3º passo chega a vez de rodar o executavel "./tp2virtual" como no exemplo:
 	
-	Exemplo 2:	#"usuario"~<"diretorio">$ ./tp2virtual "algoritmo_subst" "arquivo".log "tam_pag_Kbyts" "qtd_mem_Kbyts"
+	Exemplo:	#"usuario"~<"diretorio">$ ./tp2virtual "algoritmo_subst" "arquivo".log "tam_pag_Kbyts" "qtd_mem_Kbyts"
 		
 		Desse modo o programa executa o algoritmo de substituição sobre as instruções adquiridas apartir de um arquivo
 		alocado no mesmo diretorio de execução do programa.
