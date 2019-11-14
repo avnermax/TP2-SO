@@ -40,5 +40,6 @@ void resetaBitR(Node *h, IO *io);
 unsigned calculaIndice(unsigned endereco, IO *io);
 void adicionaEndereco(IO *io, Node *hash, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 int procuraEnderecoLivre(IO *io, Memoria *mem);
+int procuraEnderecoMem(IO *io, Memoria *mem, unsigned pagina);
 void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t);
 Node * inicializaNode(IO *io);

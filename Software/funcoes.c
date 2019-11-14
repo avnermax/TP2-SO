@@ -82,6 +82,7 @@ void Segunda_chance(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pag
             mem[menorClock->endFisico].endereco = pagina;
             menorClock->contaAcesso++; // Conta acesso do endereco recem copiado.
         }else{
+            io->faults++;
             menorClock->bitR = 0;
             menorClock->clockacesso = (double)(clock() - t) / CLOCKS_PER_SEC;
             while(aux != NULL) aux = aux->prox; // Caminha até o NULL.
@@ -188,14 +189,36 @@ int procuraEnderecoLivre(IO *io, Memoria *mem){
 	return -1;
 }
 
-void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
-    if(strcmp(io->politicaSubs, "lru") == 0){
-        LRU(io, h, mem, indice, pagina);
-	}else if(strcmp(io->politicaSubs, "nru") == 0){
-		NRU(io, h, mem, indice, pagina);
-	}else if(strcmp(io->politicaSubs, "segunda_chance") == 0){
-        Segunda_chance(io, h, mem, indice, pagina, t);
+int procuraEnderecoMem(IO *io, Memoria *mem, unsigned pagina){
+    int i;
+
+    for(i = 0; i < io->numPaginas; i++){
+		if(mem[i].endereco == pagina){
+			return i;
+		}
 	}
+
+    // Caso não encontre a pagina necessária na memória, deve fazer substituição.
+    return -1;
+}
+
+void substituiEndereco(IO *io, Node *h, Memoria *mem, unsigned indice, unsigned pagina, clock_t t){
+    int s;
+
+    s = procuraEnderecoMem(io, mem, pagina);
+    if(s == -1){
+        io->faults++;
+
+        if(strcmp(io->politicaSubs, "lru") == 0){
+            LRU(io, h, mem, indice, pagina);
+        }else if(strcmp(io->politicaSubs, "nru") == 0){
+            NRU(io, h, mem, indice, pagina);
+        }else if(strcmp(io->politicaSubs, "segunda_chance") == 0){
+            Segunda_chance(io, h, mem, indice, pagina, t);
+        }
+    }else{
+        io->hits++;
+    }
 }
 
 Node * inicializaNode(IO *io){
